@@ -20,39 +20,39 @@ from modules.navigation import NavigationSystem
 from modules.output import OutputSystem
 
 # ──────────────────────────────────────────────────────────────────────
-# Colour palette – deep navy clinical with electric-blue accents
+# Colour palette – pure black modern with electric-cyan accents
 # ──────────────────────────────────────────────────────────────────────
 CLR = {
-    "bg":           "#0B0F1A",       # near-black navy
-    "panel":        "#111827",       # dark panel
-    "panel2":       "#161E2E",       # slightly lighter panel
-    "border":       "#1F2D45",       # subtle border
-    "border2":      "#2A3F5F",       # brighter border
-    "accent":       "#00A8FF",       # electric blue
-    "accent_dark":  "#0078C0",
-    "accent_glow":  "#00A8FF33",
-    "accent2":      "#00E5CC",       # teal accent
-    "text":         "#E8EDF5",
-    "text_sub":     "#7B8FA6",
-    "text_dim":     "#445566",
-    "success":      "#00C48C",
-    "danger":       "#FF4757",
-    "warn":         "#FFB300",
-    "tag_sim":      "#00C48C",
-    "tag_cam":      "#00A8FF",
-    "scope_ring":   "#0A1628",       # outer ring around scope view
+    "bg":           "#050507",       # near-pure black
+    "panel":        "#0D0D10",       # dark panel
+    "panel2":       "#121215",       # card header / slightly lighter
+    "border":       "#1C1C22",       # hairline border
+    "border2":      "#252530",       # interactive border
+    "accent":       "#00D4FF",       # electric cyan
+    "accent_dark":  "#0099BB",
+    "accent_glow":  "#00D4FF22",
+    "accent2":      "#A78BFA",       # soft violet secondary
+    "text":         "#FFFFFF",
+    "text_sub":     "#C8D4E8",       # bright secondary text
+    "text_dim":     "#8090A8",       # muted but still readable,
+    "success":      "#00E676",
+    "danger":       "#FF1744",
+    "warn":         "#FFD600",
+    "tag_sim":      "#00E676",
+    "tag_cam":      "#00D4FF",
+    "scope_ring":   "#000000",       # outer ring around scope view
     "scope_bg":     "#000000",       # scope background
 }
 
-FONT_HEAD  = ("Segoe UI Semibold", 10)
-FONT_BODY  = ("Segoe UI", 9)
-FONT_MONO  = ("Consolas", 9)
-FONT_BIG   = ("Segoe UI Semibold", 13)
-FONT_MICRO = ("Segoe UI", 8)
-FONT_LABEL = ("Segoe UI", 8)
+FONT_HEAD  = ("Segoe UI Semibold", 11)
+FONT_BODY  = ("Segoe UI", 10)
+FONT_MONO  = ("Consolas", 10)
+FONT_BIG   = ("Segoe UI Semibold", 14)
+FONT_MICRO = ("Segoe UI", 9)
+FONT_LABEL = ("Segoe UI", 9)
 
-FRAME_W = 520
-FRAME_H = 520   # Square so circle fits perfectly
+FRAME_W = 640
+FRAME_H = 640   # Square so circle fits perfectly
 
 
 class EndoscopeApp:
@@ -63,7 +63,7 @@ class EndoscopeApp:
         self.root.title("EndoSim — Intelligent Endoscopic Assistance System")
         self.root.configure(bg=CLR["bg"])
         self.root.resizable(True, True)
-        self.root.minsize(1100, 720)
+        self.root.minsize(1200, 780)
 
         # Sub-systems
         self.illumination = IlluminationSystem(FRAME_W, FRAME_H)
@@ -97,12 +97,12 @@ class EndoscopeApp:
 
     # ── Header ────────────────────────────────────────────────────────
     def _build_header(self):
-        hdr = tk.Frame(self.root, bg=CLR["panel"], height=56)
+        hdr = tk.Frame(self.root, bg=CLR["panel"], height=50)
         hdr.grid(row=0, column=0, sticky="ew")
         hdr.grid_propagate(False)
 
-        # Accent line at very bottom of header
-        accent_line = tk.Frame(hdr, bg=CLR["accent"], height=2)
+        # Single-pixel accent line at bottom of header
+        accent_line = tk.Frame(hdr, bg=CLR["accent"], height=1)
         accent_line.place(relx=0, rely=1.0, relwidth=1.0, anchor="sw")
 
         # Logo
@@ -116,12 +116,12 @@ class EndoscopeApp:
         self._draw_hex_logo(canvas_logo)
 
         tk.Label(logo_frame, text="EndoSim", bg=CLR["panel"],
-                 fg=CLR["accent"], font=("Segoe UI Semibold", 14)).pack(
+                 fg=CLR["accent"], font=("Segoe UI Semibold", 13)).pack(
             side="left", padx=(6, 0))
 
         tk.Label(hdr, text="Intelligent Endoscopic Assistance System",
                  bg=CLR["panel"], fg=CLR["text_sub"],
-                 font=("Segoe UI", 10)).pack(side="left", pady=10)
+                 font=("Segoe UI", 9)).pack(side="left", pady=10)
 
         # Right side info
         right = tk.Frame(hdr, bg=CLR["panel"])
@@ -136,12 +136,12 @@ class EndoscopeApp:
 
         self._live_lbl = tk.Label(right, text="LIVE",
                                   bg=CLR["panel"], fg=CLR["success"],
-                                  font=("Segoe UI Semibold", 9))
+                                  font=("Segoe UI Semibold", 8))
         self._live_lbl.pack(side="left", padx=(0, 16))
 
         tk.Label(right, text="SBE3220 — Medical Equipment (II)",
                  bg=CLR["panel"], fg=CLR["text_dim"],
-                 font=("Segoe UI", 8)).pack(side="left")
+                 font=("Segoe UI", 7)).pack(side="left")
 
     def _draw_hex_logo(self, canvas):
         cx, cy, r = 16, 16, 13
@@ -168,8 +168,8 @@ class EndoscopeApp:
 
     # ── Left sidebar ─────────────────────────────────────────────────
     def _build_left_sidebar(self, parent):
-        sb = tk.Frame(parent, bg=CLR["bg"], width=230)
-        sb.grid(row=0, column=0, sticky="ns", padx=(10, 6), pady=10)
+        sb = tk.Frame(parent, bg=CLR["bg"], width=170)
+        sb.grid(row=0, column=0, sticky="ns", padx=(6, 4), pady=6)
         sb.grid_propagate(False)
 
         # ── Illumination ─────────────────────────────────────────────
@@ -278,30 +278,7 @@ class EndoscopeApp:
                   self._polyp_var,
                   self._on_polyp_toggle).pack(anchor="w")
 
-        # ── Keyboard Reference ────────────────────────────────────────
-        ref = self._card(sb, "⌨  Keyboard Reference")
-        ref._outer.pack(fill="x")
 
-        keys = [
-            ("W / ↑", "Tip Up"),       ("S / ↓", "Tip Down"),
-            ("A / ←", "Tip Left"),     ("D / →", "Tip Right"),
-            ("Q",     "Rotate ↺"),     ("E",     "Rotate ↻"),
-            ("C",     "Capture"),      ("R",     "Record"),
-            ("Space", "Pause"),        ("Esc",   "Stop"),
-        ]
-        key_grid = tk.Frame(ref, bg=CLR["panel"])
-        key_grid.pack(fill="x")
-        for i, (k, v) in enumerate(keys):
-            row_f = tk.Frame(key_grid, bg=CLR["panel"])
-            row_f.grid(row=i, column=0, sticky="ew", pady=1)
-            key_grid.columnconfigure(0, weight=1)
-            tk.Label(row_f, text=k, bg=CLR["border2"],
-                     fg=CLR["accent"], font=("Consolas", 8),
-                     width=8, anchor="center",
-                     pady=2).pack(side="left")
-            tk.Label(row_f, text=v, bg=CLR["panel"],
-                     fg=CLR["text_sub"], font=FONT_MICRO,
-                     anchor="w").pack(side="left", padx=8)
 
     # ── Center viewport ───────────────────────────────────────────────
     def _build_center(self, parent):
@@ -354,7 +331,7 @@ class EndoscopeApp:
                                 width=FRAME_W, height=FRAME_H,
                                 bg=CLR["scope_bg"],
                                 highlightthickness=0)
-        self.canvas.grid(row=0, column=0, padx=20, pady=16)
+        self.canvas.grid(row=0, column=0, padx=8, pady=8)
 
         # Control bar
         ctrl_bar = tk.Frame(scope_card, bg=CLR["panel2"], height=46)
@@ -504,13 +481,13 @@ class EndoscopeApp:
 
     # ── Right sidebar ─────────────────────────────────────────────────
     def _build_right_sidebar(self, parent):
-        sb = tk.Frame(parent, bg=CLR["bg"], width=220)
-        sb.grid(row=0, column=2, sticky="ns", padx=(6, 10), pady=10)
+        sb = tk.Frame(parent, bg=CLR["bg"], width=120)
+        sb.grid(row=0, column=2, sticky="ns", padx=(4, 6), pady=6)
         sb.grid_propagate(False)
 
         # ── Vitals / metrics panel ────────────────────────────────────
         vitals = self._card(sb, "📊  Live Metrics")
-        vitals._outer.pack(fill="x", pady=(0, 8))
+        vitals._outer.pack(fill="x", pady=(0, 4))
 
         self._metric_vars = {}
         metrics = [
@@ -521,48 +498,39 @@ class EndoscopeApp:
         ]
         for i, (name, unit) in enumerate(metrics):
             row_f = tk.Frame(vitals, bg=CLR["panel"])
-            row_f.pack(fill="x", pady=3)
+            row_f.pack(fill="x", pady=0)
             tk.Label(row_f, text=name, bg=CLR["panel"],
-                     fg=CLR["text_sub"], font=FONT_MICRO,
+                     fg=CLR["text_sub"], font=("Segoe UI", 7),
                      anchor="w").pack(side="left")
-            var = tk.StringVar(value=f"—")
+            var = tk.StringVar(value="—")
             self._metric_vars[name] = (var, unit)
             val_lbl = tk.Label(row_f, textvariable=var,
                                bg=CLR["panel"], fg=CLR["accent"],
-                               font=("Consolas", 10, "bold"),
+                               font=("Consolas", 8, "bold"),
                                anchor="e")
             val_lbl.pack(side="right")
             tk.Label(row_f, text=unit, bg=CLR["panel"],
-                     fg=CLR["text_dim"], font=FONT_MICRO).pack(side="right")
-
-            # Thin separator
-            if i < len(metrics) - 1:
-                tk.Frame(vitals, bg=CLR["border"], height=1).pack(
-                    fill="x", pady=(2, 0))
+                     fg=CLR["text_dim"], font=("Segoe UI", 7)).pack(side="right")
 
         # ── Display Options ───────────────────────────────────────────
         disp = self._card(sb, "🖥  Display Options")
-        disp._outer.pack(fill="x", pady=(0, 8))
+        disp._outer.pack(fill="x", pady=(0, 4))
 
         self._hud_var   = tk.BooleanVar(value=True)
         self._xhair_var = tk.BooleanVar(value=True)
-        self._hist_var  = tk.BooleanVar(value=False)
 
-        self._chk(disp, "Show HUD Overlay", self._hud_var,
+        self._chk(disp, "HUD Overlay", self._hud_var,
                   lambda: setattr(self.output, "show_hud",
-                                  self._hud_var.get())).pack(anchor="w", pady=2)
-        self._chk(disp, "Show Crosshair", self._xhair_var,
+                                  self._hud_var.get())).pack(anchor="w", pady=0)
+        self._chk(disp, "Crosshair", self._xhair_var,
                   lambda: setattr(self.output, "show_crosshair",
-                                  self._xhair_var.get())).pack(anchor="w", pady=2)
-        self._chk(disp, "Show Histogram", self._hist_var,
-                  lambda: setattr(self.output, "show_histogram",
-                                  self._hist_var.get())).pack(anchor="w", pady=2)
+                                  self._xhair_var.get())).pack(anchor="w", pady=0)
 
         # ── Captured files log ────────────────────────────────────────
         log_card = self._card(sb, "📁  Captured Files")
-        log_card._outer.pack(fill="x", pady=(0, 8))
+        log_card._outer.pack(fill="x", pady=(0, 4))
 
-        self._log_text = tk.Text(log_card, height=5, font=FONT_MONO,
+        self._log_text = tk.Text(log_card, height=2, font=("Consolas", 7),
                                  bg=CLR["scope_bg"], fg=CLR["accent"],
                                  insertbackground=CLR["accent"],
                                  relief="flat", wrap="none",
@@ -571,34 +539,11 @@ class EndoscopeApp:
                                  highlightbackground=CLR["border"])
         self._log_text.pack(fill="x")
 
-        # ── System Status ─────────────────────────────────────────────
-        sys_card = self._card(sb, "⚙  System Status")
-        sys_card._outer.pack(fill="x")
 
-        status_items = [
-            ("Camera", "Detected" if self.imaging.cap else "Not Found",
-             CLR["success"] if self.imaging.cap else CLR["danger"]),
-            ("Recorder", "Ready",    CLR["success"]),
-            ("Navigation", "Online", CLR["success"]),
-        ]
-        for name, val, clr in status_items:
-            r = tk.Frame(sys_card, bg=CLR["panel"])
-            r.pack(fill="x", pady=2)
-            # Status dot
-            dot = tk.Canvas(r, width=8, height=8, bg=CLR["panel"],
-                            highlightthickness=0)
-            dot.pack(side="left", padx=(0, 6))
-            dot.create_oval(1, 1, 7, 7, fill=clr, outline="")
-            tk.Label(r, text=name, bg=CLR["panel"],
-                     fg=CLR["text_sub"], font=FONT_MICRO,
-                     anchor="w").pack(side="left")
-            tk.Label(r, text=val, bg=CLR["panel"],
-                     fg=clr, font=FONT_MICRO,
-                     anchor="e").pack(side="right")
 
     # ── Status bar ────────────────────────────────────────────────────
     def _build_statusbar(self):
-        bar = tk.Frame(self.root, bg=CLR["panel2"], height=26)
+        bar = tk.Frame(self.root, bg=CLR["panel"], height=22)
         bar.grid(row=2, column=0, sticky="ew")
         bar.grid_propagate(False)
 
@@ -633,20 +578,20 @@ class EndoscopeApp:
         """
         outer = tk.Frame(parent, bg=CLR["panel"],
                          highlightthickness=1,
-                         highlightbackground=CLR["border2"])
+                         highlightbackground=CLR["border"])
         # Store outer so caller can place it
         outer._layout = layout
 
         if title:
             hdr = tk.Frame(outer, bg=CLR["panel2"])
             hdr.pack(fill="x")
-            tk.Frame(hdr, bg=CLR["accent"], width=3).pack(side="left",
-                                                           fill="y")
+            # Thin left accent bar
+            tk.Frame(hdr, bg=CLR["accent"], width=2).pack(side="left", fill="y")
             tk.Label(hdr, text=title, bg=CLR["panel2"],
-                     fg=CLR["text"], font=FONT_BODY,
-                     padx=10, pady=6).pack(side="left")
+                     fg=CLR["text"], font=("Segoe UI Semibold", 7),
+                     padx=6, pady=2).pack(side="left")
 
-        inner = tk.Frame(outer, bg=CLR["panel"], padx=10, pady=8)
+        inner = tk.Frame(outer, bg=CLR["panel"], padx=4, pady=2)
         inner.pack(fill="x")
         # Attach outer to inner so callers can grid/pack the outer wrapper
         inner._outer = outer
@@ -658,32 +603,32 @@ class EndoscopeApp:
         return tk.Button(parent, text=text, command=command,
                          bg=bg, fg=CLR["text"],
                          activebackground=CLR["accent"],
-                         activeforeground="white",
-                         font=FONT_MICRO, relief="flat",
-                         cursor="hand2", padx=8, pady=3,
+                         activeforeground="#000000",
+                         font=("Segoe UI", 9), relief="flat",
+                         cursor="hand2", padx=7, pady=2,
                          **kwargs)
 
     def _cta_btn(self, parent, text, command,
                  bg=CLR["border2"]) -> tk.Button:
         return tk.Button(parent, text=text, command=command,
-                         bg=bg, fg="white",
-                         activebackground=CLR["accent_dark"],
-                         activeforeground="white",
-                         font=("Segoe UI Semibold", 9),
+                         bg=bg, fg="#EEF2FF",
+                         activebackground=CLR["accent"],
+                         activeforeground="#000000",
+                         font=("Segoe UI Semibold", 10),
                          relief="flat", cursor="hand2",
-                         padx=12, pady=4)
+                         padx=10, pady=3)
 
     def _chk(self, parent, text, var, command=None) -> tk.Checkbutton:
         return tk.Checkbutton(parent, text=text, variable=var,
                               command=command,
                               bg=CLR["panel"], fg=CLR["text_sub"],
                               activebackground=CLR["panel"],
-                              selectcolor=CLR["panel2"],
-                              font=FONT_MICRO, cursor="hand2")
+                              selectcolor=CLR["border2"],
+                              font=("Segoe UI", 7), cursor="hand2")
 
     def _field_label(self, parent, text: str) -> tk.Label:
         return tk.Label(parent, text=text, bg=CLR["panel"],
-                        fg=CLR["text_dim"], font=FONT_LABEL)
+                        fg=CLR["text_dim"], font=("Segoe UI", 9))
 
     def _toggle_btn(self, parent, var: tk.BooleanVar,
                     command) -> tk.Checkbutton:
@@ -692,7 +637,7 @@ class EndoscopeApp:
                               bg=CLR["panel"], fg=CLR["accent"],
                               activebackground=CLR["panel"],
                               selectcolor=CLR["panel"],
-                              font=("Segoe UI Semibold", 8),
+                              font=("Segoe UI Semibold", 9),
                               cursor="hand2", relief="flat",
                               indicatoron=True)
 
