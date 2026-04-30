@@ -44,12 +44,12 @@ CLR = {
     "scope_bg":     "#000000",       # scope background
 }
 
-FONT_HEAD  = ("Segoe UI Semibold", 11)
-FONT_BODY  = ("Segoe UI", 10)
-FONT_MONO  = ("Consolas", 10)
-FONT_BIG   = ("Segoe UI Semibold", 14)
-FONT_MICRO = ("Segoe UI", 9)
-FONT_LABEL = ("Segoe UI", 9)
+FONT_HEAD  = ("Segoe UI Semibold", 12)
+FONT_BODY  = ("Segoe UI", 11)
+FONT_MONO  = ("Consolas", 11)
+FONT_BIG   = ("Segoe UI Semibold", 16)
+FONT_MICRO = ("Segoe UI", 10)
+FONT_LABEL = ("Segoe UI", 10)
 
 FRAME_W = 720
 FRAME_H = 720   # Square so circle fits perfectly
@@ -116,12 +116,12 @@ class EndoscopeApp:
         self._draw_hex_logo(canvas_logo)
 
         tk.Label(logo_frame, text="EndoSim", bg=CLR["panel"],
-                 fg=CLR["accent"], font=("Segoe UI Semibold", 13)).pack(
+                 fg=CLR["accent"], font=("Segoe UI Semibold", 15)).pack(
             side="left", padx=(6, 0))
 
         tk.Label(hdr, text="Intelligent Endoscopic Assistance System",
                  bg=CLR["panel"], fg=CLR["text_sub"],
-                 font=("Segoe UI", 9)).pack(side="left", pady=10)
+                 font=("Segoe UI", 11)).pack(side="left", pady=10)
 
         # Right side info
         right = tk.Frame(hdr, bg=CLR["panel"])
@@ -136,12 +136,12 @@ class EndoscopeApp:
 
         self._live_lbl = tk.Label(right, text="LIVE",
                                   bg=CLR["panel"], fg=CLR["success"],
-                                  font=("Segoe UI Semibold", 8))
+                                  font=("Segoe UI Semibold", 10))
         self._live_lbl.pack(side="left", padx=(0, 16))
 
         tk.Label(right, text="SBE3220 — Medical Equipment (II)",
                  bg=CLR["panel"], fg=CLR["text_dim"],
-                 font=("Segoe UI", 7)).pack(side="left")
+                 font=("Segoe UI", 9)).pack(side="left")
 
     def _draw_hex_logo(self, canvas):
         cx, cy, r = 16, 16, 13
@@ -151,7 +151,7 @@ class EndoscopeApp:
             points.extend([cx + r * math.cos(angle), cy + r * math.sin(angle)])
         canvas.create_polygon(points, fill=CLR["accent"], outline="", smooth=False)
         canvas.create_text(cx, cy, text="E", fill="white",
-                           font=("Segoe UI Semibold", 10))
+                           font=("Segoe UI Semibold", 12))
 
     # ── Body ──────────────────────────────────────────────────────────
     def _build_body(self):
@@ -306,13 +306,13 @@ class EndoscopeApp:
 
         self._mode_badge = tk.Label(top_bar, text="● SIMULATION",
                                     bg=CLR["tag_sim"], fg="white",
-                                    font=("Segoe UI Semibold", 8),
+                                    font=("Segoe UI Semibold", 10),
                                     padx=8, pady=3)
         self._mode_badge.pack(side="left", padx=6, pady=6)
 
         self._rec_badge = tk.Label(top_bar, text="⏺ REC",
                                    bg=CLR["danger"], fg="white",
-                                   font=("Segoe UI Semibold", 8),
+                                    font=("Segoe UI Semibold", 10),
                                    padx=8, pady=3)
         # hidden until recording
 
@@ -361,7 +361,7 @@ class EndoscopeApp:
         nav_card = tk.Frame(parent, bg=CLR["panel"],
                             highlightthickness=1,
                             highlightbackground=CLR["border2"])
-        nav_card.pack(side="bottom", fill="x", pady=(8, 0))
+        nav_card.pack(side="top", fill="x", pady=(0, 4))
 
         # Section label
         top = tk.Frame(nav_card, bg=CLR["panel2"], height=30)
@@ -416,7 +416,7 @@ class EndoscopeApp:
                              bg=CLR["panel2"], fg=CLR["text"],
                              activebackground=CLR["accent"],
                              activeforeground="white",
-                             font=("Segoe UI", 10),
+                             font=("Segoe UI", 12),
                              relief="flat", width=3, height=1,
                              cursor="hand2",
                              highlightthickness=1,
@@ -472,17 +472,17 @@ class EndoscopeApp:
             row_f = tk.Frame(vitals, bg=CLR["panel"])
             row_f.pack(fill="x", pady=0)
             tk.Label(row_f, text=name, bg=CLR["panel"],
-                     fg=CLR["text_sub"], font=("Segoe UI", 7),
+                     fg=CLR["text_sub"], font=("Segoe UI", 9),
                      anchor="w").pack(side="left")
             var = tk.StringVar(value="—")
             self._metric_vars[name] = (var, unit)
             val_lbl = tk.Label(row_f, textvariable=var,
                                bg=CLR["panel"], fg=CLR["accent"],
-                               font=("Consolas", 8, "bold"),
+                               font=("Consolas", 10, "bold"),
                                anchor="e")
             val_lbl.pack(side="right")
             tk.Label(row_f, text=unit, bg=CLR["panel"],
-                     fg=CLR["text_dim"], font=("Segoe UI", 7)).pack(side="right")
+                     fg=CLR["text_dim"], font=("Segoe UI", 9)).pack(side="right")
 
         # ── Display Options ───────────────────────────────────────────
         disp = self._card(sb, "🖥  Display Options")
@@ -502,7 +502,7 @@ class EndoscopeApp:
         log_card = self._card(sb, "📁  Captured Files")
         log_card._outer.pack(fill="x", pady=(0, 4))
 
-        self._log_text = tk.Text(log_card, height=5, font=("Consolas", 7),
+        self._log_text = tk.Text(log_card, height=2, font=("Consolas", 9),
                                  bg=CLR["scope_bg"], fg=CLR["accent"],
                                  insertbackground=CLR["accent"],
                                  relief="flat", wrap="none",
@@ -563,7 +563,7 @@ class EndoscopeApp:
             # Thin left accent bar
             tk.Frame(hdr, bg=CLR["accent"], width=2).pack(side="left", fill="y")
             tk.Label(hdr, text=title, bg=CLR["panel2"],
-                     fg=CLR["text"], font=("Segoe UI Semibold", 7),
+                     fg=CLR["text"], font=("Segoe UI Semibold", 9),
                      padx=6, pady=2).pack(side="left")
 
         inner = tk.Frame(outer, bg=CLR["panel"], padx=4, pady=2)
@@ -589,7 +589,7 @@ class EndoscopeApp:
                          bg=bg, fg="#EEF2FF",
                          activebackground=CLR["accent"],
                          activeforeground="#000000",
-                         font=("Segoe UI Semibold", 10),
+                         font=("Segoe UI Semibold", 12),
                          relief="flat", cursor="hand2",
                          padx=10, pady=3)
 
@@ -599,11 +599,11 @@ class EndoscopeApp:
                               bg=CLR["panel"], fg=CLR["text_sub"],
                               activebackground=CLR["panel"],
                               selectcolor=CLR["border2"],
-                              font=("Segoe UI", 7), cursor="hand2")
+                              font=("Segoe UI", 9), cursor="hand2")
 
     def _field_label(self, parent, text: str) -> tk.Label:
         return tk.Label(parent, text=text, bg=CLR["panel"],
-                        fg=CLR["text_dim"], font=("Segoe UI", 9))
+                        fg=CLR["text_dim"], font=("Segoe UI", 11))
 
     def _toggle_btn(self, parent, var: tk.BooleanVar,
                     command) -> tk.Checkbutton:
@@ -612,7 +612,7 @@ class EndoscopeApp:
                               bg=CLR["panel"], fg=CLR["accent"],
                               activebackground=CLR["panel"],
                               selectcolor=CLR["panel"],
-                              font=("Segoe UI Semibold", 9),
+                              font=("Segoe UI Semibold", 11),
                               cursor="hand2", relief="flat",
                               indicatoron=True)
 
@@ -673,7 +673,7 @@ class EndoscopeApp:
             self._status("Start the system first.")
             return
         path = self.output.capture_image(self._current_frame)
-        self._append_log(f"📷 {os.path.basename(path)}", path)
+        self._append_log(f"📷 {os.path.basename(path)}")
         self._status(f"Image saved → {os.path.basename(path)}")
 
     def toggle_recording(self):
@@ -685,7 +685,7 @@ class EndoscopeApp:
             self._rec_badge.pack_forget()
             self._rec_btn.config(text="⏺  Record",
                                  bg=CLR["border2"])
-            self._append_log(f"🎬 {os.path.basename(path)}", path)
+            self._append_log(f"🎬 {os.path.basename(path)}")
             self._status(f"Video saved → {os.path.basename(path)}")
         else:
             self.output.start_recording(FRAME_W, FRAME_H)
@@ -795,23 +795,9 @@ class EndoscopeApp:
                 self._pulse_dot,
                 fill=CLR["success"] if self._running else CLR["text_dim"])
 
-    def _append_log(self, msg: str, path: str = None):
+    def _append_log(self, msg: str):
         self._log_text.config(state="normal")
-        start_idx = self._log_text.index("end-1c")
         self._log_text.insert("end", msg + "\n")
-        end_idx = self._log_text.index("end-1c")
-
-        if path:
-            # Create a unique tag for this file
-            tag_name = f"file_{time.time()}_{hash(path)}"
-            self._log_text.tag_add(tag_name, start_idx, end_idx)
-            self._log_text.tag_config(tag_name, foreground=CLR["accent"], underline=True)
-            
-            # Bind events
-            self._log_text.tag_bind(tag_name, "<Enter>", lambda e: self._log_text.config(cursor="hand2"))
-            self._log_text.tag_bind(tag_name, "<Leave>", lambda e: self._log_text.config(cursor=""))
-            self._log_text.tag_bind(tag_name, "<Button-1>", lambda e, p=path: os.startfile(p))
-
         self._log_text.see("end")
         self._log_text.config(state="disabled")
 
