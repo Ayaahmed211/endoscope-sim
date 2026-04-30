@@ -51,8 +51,8 @@ FONT_BIG   = ("Segoe UI Semibold", 16)
 FONT_MICRO = ("Segoe UI", 10)
 FONT_LABEL = ("Segoe UI", 10)
 
-FRAME_W = 900
-FRAME_H = 900   # Square so circle fits perfectly
+FRAME_W = 720
+FRAME_H = 720   # Square so circle fits perfectly
 
 
 class EndoscopeApp:
@@ -128,7 +128,7 @@ class EndoscopeApp:
         right.pack(side="right", padx=18)
 
         # Live pulse indicator
-        self._pulse_canvas = tk.Canvas(right, width=1, height=10,
+        self._pulse_canvas = tk.Canvas(right, width=10, height=10,
                                        bg=CLR["panel"], highlightthickness=0)
         self._pulse_canvas.pack(side="left", padx=(0, 6))
         self._pulse_dot = self._pulse_canvas.create_oval(1, 1, 9, 9,
