@@ -502,7 +502,7 @@ class EndoscopeApp:
         log_card = self._card(sb, "📁  Captured Files")
         log_card._outer.pack(fill="x", pady=(0, 4))
 
-        self._log_text = tk.Text(log_card, height=2, font=("Consolas", 7),
+        self._log_text = tk.Text(log_card, height=5, font=("Consolas", 7),
                                  bg=CLR["scope_bg"], fg=CLR["accent"],
                                  insertbackground=CLR["accent"],
                                  relief="flat", wrap="none",
@@ -673,7 +673,7 @@ class EndoscopeApp:
             self._status("Start the system first.")
             return
         path = self.output.capture_image(self._current_frame)
-        self._append_log(f"📷 {os.path.basename(path)}")
+        self._append_log(f"📷 {os.path.basename(path)}", path)
         self._status(f"Image saved → {os.path.basename(path)}")
 
     def toggle_recording(self):
@@ -685,7 +685,7 @@ class EndoscopeApp:
             self._rec_badge.pack_forget()
             self._rec_btn.config(text="⏺  Record",
                                  bg=CLR["border2"])
-            self._append_log(f"🎬 {os.path.basename(path)}")
+            self._append_log(f"🎬 {os.path.basename(path)}", path)
             self._status(f"Video saved → {os.path.basename(path)}")
         else:
             self.output.start_recording(FRAME_W, FRAME_H)
@@ -795,9 +795,23 @@ class EndoscopeApp:
                 self._pulse_dot,
                 fill=CLR["success"] if self._running else CLR["text_dim"])
 
-    def _append_log(self, msg: str):
+    def _append_log(self, msg: str, path: str = None):
         self._log_text.config(state="normal")
+        start_idx = self._log_text.index("end-1c")
         self._log_text.insert("end", msg + "\n")
+        end_idx = self._log_text.index("end-1c")
+
+        if path:
+            # Create a unique tag for this file
+            tag_name = f"file_{time.time()}_{hash(path)}"
+            self._log_text.tag_add(tag_name, start_idx, end_idx)
+            self._log_text.tag_config(tag_name, foreground=CLR["accent"], underline=True)
+            
+            # Bind events
+            self._log_text.tag_bind(tag_name, "<Enter>", lambda e: self._log_text.config(cursor="hand2"))
+            self._log_text.tag_bind(tag_name, "<Leave>", lambda e: self._log_text.config(cursor=""))
+            self._log_text.tag_bind(tag_name, "<Button-1>", lambda e, p=path: os.startfile(p))
+
         self._log_text.see("end")
         self._log_text.config(state="disabled")
 
