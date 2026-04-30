@@ -51,8 +51,8 @@ FONT_BIG   = ("Segoe UI Semibold", 14)
 FONT_MICRO = ("Segoe UI", 9)
 FONT_LABEL = ("Segoe UI", 9)
 
-FRAME_W = 640
-FRAME_H = 640   # Square so circle fits perfectly
+FRAME_W = 720
+FRAME_H = 720   # Square so circle fits perfectly
 
 
 class EndoscopeApp:
@@ -63,7 +63,7 @@ class EndoscopeApp:
         self.root.title("EndoSim — Intelligent Endoscopic Assistance System")
         self.root.configure(bg=CLR["bg"])
         self.root.resizable(True, True)
-        self.root.minsize(1200, 780)
+        self.root.minsize(1200, 920)
 
         # Sub-systems
         self.illumination = IlluminationSystem(FRAME_W, FRAME_H)
@@ -355,42 +355,35 @@ class EndoscopeApp:
                                        CLR["border2"])
         self._rec_btn.pack(side="left", padx=4, pady=8)
 
-        # ── Navigation panel ──────────────────────────────────────────
-        self._build_navigation_panel(center)
+        # Navigation panel moved to right sidebar
 
     def _build_navigation_panel(self, parent):
         nav_card = tk.Frame(parent, bg=CLR["panel"],
                             highlightthickness=1,
                             highlightbackground=CLR["border2"])
-        nav_card.grid(row=1, column=0, sticky="ew", pady=(8, 0))
-        nav_card.columnconfigure(1, weight=1)
+        nav_card.pack(side="bottom", fill="x", pady=(8, 0))
 
         # Section label
         top = tk.Frame(nav_card, bg=CLR["panel2"], height=30)
-        top.grid(row=0, column=0, columnspan=3, sticky="ew")
-        top.grid_propagate(False)
-        tk.Label(top, text="Navigation & Insertion Control",
+        top.pack(fill="x")
+        top.pack_propagate(False)
+        tk.Label(top, text="Navigation Control",
                  bg=CLR["panel2"], fg=CLR["text"],
                  font=FONT_HEAD).pack(side="left", padx=14, pady=5)
 
         body = tk.Frame(nav_card, bg=CLR["panel"])
-        body.grid(row=1, column=0, columnspan=3, sticky="ew",
-                  padx=14, pady=8)
+        body.pack(fill="x", padx=14, pady=8)
 
         # D-pad
         self._build_dpad(body)
 
-        # Separator
-        tk.Frame(body, width=1, bg=CLR["border"]).pack(side="left",
-                                                         fill="y", padx=16)
-
         # Stats readout
         stats = tk.Frame(body, bg=CLR["panel"])
-        stats.pack(side="left", fill="both", expand=True)
+        stats.pack(fill="x", pady=(8, 0))
 
         self._nav_vars = {}
         labels = [("Up/Down", "°"), ("Left/Right", "°"),
-                  ("Rotation", "°"), ("Depth", " cm")]
+                  ("Rotation", "°")]
         for i, (lbl, unit) in enumerate(labels):
             r = tk.Frame(stats, bg=CLR["panel"])
             r.pack(fill="x", pady=2)
@@ -408,35 +401,15 @@ class EndoscopeApp:
                   self._reset_navigation,
                   bg=CLR["border2"]).pack(anchor="w", pady=(6, 0))
 
-        # Depth slider
-        tk.Frame(body, width=1, bg=CLR["border"]).pack(side="left",
-                                                         fill="y", padx=16)
-        depth_frame = tk.Frame(body, bg=CLR["panel"])
-        depth_frame.pack(side="left")
-        tk.Label(depth_frame, text="Insertion\nDepth",
-                 bg=CLR["panel"], fg=CLR["text_sub"],
-                 font=FONT_MICRO, justify="center").pack()
-        self._depth_var = tk.DoubleVar(value=0)
-        tk.Scale(depth_frame, from_=150, to=0,
-                 orient="vertical", length=80,
-                 variable=self._depth_var,
-                 bg=CLR["panel"], fg=CLR["accent"],
-                 troughcolor=CLR["border2"],
-                 activebackground=CLR["accent"],
-                 highlightthickness=0,
-                 command=self._on_depth_slide).pack()
-        tk.Label(depth_frame, text="cm",
-                 bg=CLR["panel"], fg=CLR["text_dim"],
-                 font=FONT_MICRO).pack()
-
     def _build_dpad(self, parent):
         dpad_wrap = tk.Frame(parent, bg=CLR["panel"])
-        dpad_wrap.pack(side="left")
+        dpad_wrap.pack(fill="x")
+        dpad_wrap.columnconfigure((0, 1, 2), weight=1)
 
         tk.Label(dpad_wrap, text="Tip Deflection",
                  bg=CLR["panel"], fg=CLR["text_dim"],
                  font=FONT_MICRO).grid(row=0, column=0,
-                                       columnspan=3, pady=(0, 4))
+                                       columnspan=3, pady=(0, 2))
 
         def dpad_btn(text):
             return tk.Button(dpad_wrap, text=text,
@@ -481,7 +454,7 @@ class EndoscopeApp:
 
     # ── Right sidebar ─────────────────────────────────────────────────
     def _build_right_sidebar(self, parent):
-        sb = tk.Frame(parent, bg=CLR["bg"], width=120)
+        sb = tk.Frame(parent, bg=CLR["bg"], width=240)
         sb.grid(row=0, column=2, sticky="ns", padx=(4, 6), pady=6)
         sb.grid_propagate(False)
 
@@ -494,7 +467,6 @@ class EndoscopeApp:
             ("Frame Rate", "fps"),
             ("Light Power", "%"),
             ("Zoom Level", "×"),
-            ("Insertion",  "cm"),
         ]
         for i, (name, unit) in enumerate(metrics):
             row_f = tk.Frame(vitals, bg=CLR["panel"])
@@ -538,6 +510,9 @@ class EndoscopeApp:
                                  highlightthickness=1,
                                  highlightbackground=CLR["border"])
         self._log_text.pack(fill="x")
+
+        # ── Navigation panel ──────────────────────────────────────────
+        self._build_navigation_panel(sb)
 
 
 
@@ -721,7 +696,6 @@ class EndoscopeApp:
 
     def _reset_navigation(self):
         self.navigation.reset()
-        self._depth_var.set(0)
 
     # ══════════════════════════════════════════════════════════════════
     # Main render loop
@@ -792,7 +766,6 @@ class EndoscopeApp:
         for key, var in self._nav_vars.items():
             if key in status:
                 var.set(status[key])
-        self._depth_var.set(self.navigation.insertion_depth)
 
         # Mode badge
         mode = self.imaging.mode
@@ -811,7 +784,6 @@ class EndoscopeApp:
             "Frame Rate": f"{self._fps:.1f}",
             "Light Power": f"{self.illumination.intensity_percent}",
             "Zoom Level":  f"{self.imaging.zoom_factor:.1f}",
-            "Insertion":   f"{self.navigation.insertion_depth:.1f}",
         }
         for name, val in vals.items():
             if name in self._metric_vars:
@@ -860,9 +832,6 @@ class EndoscopeApp:
 
     def _on_polyp_toggle(self):
         self.imaging.show_polyp = self._polyp_var.get()
-
-    def _on_depth_slide(self, val):
-        self.navigation.insertion_depth = float(val)
 
     def _on_close(self):
         self.stop()

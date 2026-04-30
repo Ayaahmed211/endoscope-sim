@@ -1,9 +1,3 @@
-"""
-Navigation & Insertion Tube Module
-Simulates tip deflection, rotation, insertion depth, and
-keyboard/mouse-based control of the endoscope.
-"""
-
 import math
 import time
 
@@ -13,7 +7,6 @@ class NavigationSystem:
     Tracks virtual endoscope position and orientation.
     Keyboard events (WASD / arrow keys) are translated into
     tip deflection (up/down/left/right) and rotation.
-    Scroll wheel / +/- keys control insertion depth.
     """
 
     # Deflection limits in degrees
@@ -24,7 +17,6 @@ class NavigationSystem:
         self.deflection_up_down = 0.0      # degrees, + = up
         self.deflection_left_right = 0.0   # degrees, + = right
         self.rotation = 0.0                # shaft rotation degrees
-        self.insertion_depth = 0.0         # cm (0-150)
         self.speed = 3.0                   # degrees per key-press
 
         # For smooth continuous movement
@@ -47,7 +39,7 @@ class NavigationSystem:
     def update(self):
         """Call every frame to apply held-key movement."""
         now = time.time()
-        dt = now - self._last_update
+        dt = now - self._last_update #
         self._last_update = now
         step = self.speed * 60 * dt   # ~speed per frame at 60fps
 
@@ -64,10 +56,6 @@ class NavigationSystem:
             self._rotate(-step * 0.5); moved = True
         if "e" in self._keys_held:
             self._rotate(step * 0.5); moved = True
-        if "insert_in" in self._keys_held:
-            self.insertion_depth = min(150.0, self.insertion_depth + dt * 5)
-        if "insert_out" in self._keys_held:
-            self.insertion_depth = max(0.0, self.insertion_depth - dt * 5)
 
         if moved:
             self._log_position()
@@ -96,7 +84,6 @@ class NavigationSystem:
         self.deflection_up_down = 0.0
         self.deflection_left_right = 0.0
         self.rotation = 0.0
-        self.insertion_depth = 0.0
         self.log.clear()
 
     # ------------------------------------------------------------------
@@ -126,7 +113,6 @@ class NavigationSystem:
             "ud": round(self.deflection_up_down, 1),
             "lr": round(self.deflection_left_right, 1),
             "rot": round(self.rotation, 1),
-            "depth": round(self.insertion_depth, 1),
         }
         self.log.append(entry)
         if len(self.log) > 200:
@@ -142,5 +128,4 @@ class NavigationSystem:
             "Up/Down": f"{self.deflection_up_down:+.1f}°",
             "Left/Right": f"{self.deflection_left_right:+.1f}°",
             "Rotation": f"{self.rotation:.1f}°",
-            "Depth": f"{self.insertion_depth:.1f} cm",
         }
