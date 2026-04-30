@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 opencv-python
 scikit-image
 matplotlib
 numpy
 pandas
 openpyxl
+=======
+opencv-python>=4.8.0
+numpy>=1.24.0
+Pillow>=10.0.0
+>>>>>>> 49a5b5e992919bea94af456db377ac2581be2382

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 =============================================================================
   ENDOSCOPIC IMAGE PROCESSING — BONUS TASK  (SBE3220 Task 02)
@@ -178,3 +179,17 @@ if __name__ == "__main__":
                 process_folder(fallback, limit=args.limit, visualize_count=args.visualize)
             else:
                 run_synthetic_test()
+=======
+
+import sys
+from modules.app import EndoscopeApp
+
+
+def main():
+    app = EndoscopeApp()
+    app.run()
+
+
+if __name__ == "__main__":
+    main()
+>>>>>>> 49a5b5e992919bea94af456db377ac2581be2382
