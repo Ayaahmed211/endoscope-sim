@@ -51,8 +51,8 @@ FONT_BIG   = ("Segoe UI Semibold", 16)
 FONT_MICRO = ("Segoe UI", 10)
 FONT_LABEL = ("Segoe UI", 10)
 
-FRAME_W = 720
-FRAME_H = 720   # Square so circle fits perfectly
+FRAME_W = 900
+FRAME_H = 900   # Square so circle fits perfectly
 
 
 class EndoscopeApp:
@@ -63,7 +63,7 @@ class EndoscopeApp:
         self.root.title("EndoSim — Intelligent Endoscopic Assistance System")
         self.root.configure(bg=CLR["bg"])
         self.root.resizable(True, True)
-        self.root.minsize(1200, 920)
+        self.root.minsize(1250, 1100)
 
         # Sub-systems
         self.illumination = IlluminationSystem(FRAME_W, FRAME_H)
@@ -128,7 +128,7 @@ class EndoscopeApp:
         right.pack(side="right", padx=18)
 
         # Live pulse indicator
-        self._pulse_canvas = tk.Canvas(right, width=10, height=10,
+        self._pulse_canvas = tk.Canvas(right, width=1, height=10,
                                        bg=CLR["panel"], highlightthickness=0)
         self._pulse_canvas.pack(side="left", padx=(0, 6))
         self._pulse_dot = self._pulse_canvas.create_oval(1, 1, 9, 9,
@@ -168,7 +168,7 @@ class EndoscopeApp:
 
     # ── Left sidebar ─────────────────────────────────────────────────
     def _build_left_sidebar(self, parent):
-        sb = tk.Frame(parent, bg=CLR["bg"], width=170)
+        sb = tk.Frame(parent, bg=CLR["bg"], width=150)
         sb.grid(row=0, column=0, sticky="ns", padx=(6, 4), pady=6)
         sb.grid_propagate(False)
 
@@ -270,13 +270,25 @@ class EndoscopeApp:
                       lambda k=key, v=var: self._on_filter_change(k, v)
                       ).grid(row=i // 2, column=i % 2, sticky="w", padx=2)
 
-        # Polyp toggle
-        sep = tk.Frame(img, bg=CLR["border"], height=1)
-        sep.pack(fill="x", pady=6)
-        self._polyp_var = tk.BooleanVar(value=True)
-        self._chk(img, "Show Polyp (simulation)",
-                  self._polyp_var,
-                  self._on_polyp_toggle).pack(anchor="w")
+        # ── Pathology ────────────────────────────────────────────────
+        path = self._card(sb, "🧬  Pathology Scenarios")
+        path._outer.pack(fill="x", pady=(0, 8))
+
+        self._scenario_var = tk.StringVar(value="polyp")
+        scenarios = [
+            ("none",     "Normal Tissue"),
+            ("polyp",    "Sessile Polyp"),
+            ("tumor",    "Malignant Tumor"),
+            ("ulcer",    "Gastric Ulcer"),
+            ("bleeding", "Active Bleeding"),
+        ]
+        for val, label in scenarios:
+            tk.Radiobutton(path, text=label, variable=self._scenario_var,
+                           value=val, bg=CLR["panel"], fg=CLR["text_sub"],
+                           selectcolor=CLR["panel"],
+                           activebackground=CLR["panel"],
+                           font=FONT_MICRO,
+                           command=self._on_scenario_change).pack(anchor="w", padx=4)
 
 
 
@@ -382,20 +394,20 @@ class EndoscopeApp:
         stats.pack(fill="x", pady=(8, 0))
 
         self._nav_vars = {}
-        labels = [("Up/Down", "°"), ("Left/Right", "°"),
-                  ("Rotation", "°")]
+        labels = [("U/D", "°"), ("L/R", "°"),
+                  ("ROT", "°")]
         for i, (lbl, unit) in enumerate(labels):
             r = tk.Frame(stats, bg=CLR["panel"])
             r.pack(fill="x", pady=2)
             tk.Label(r, text=lbl + ":", bg=CLR["panel"],
-                     fg=CLR["text_dim"], font=FONT_LABEL,
-                     width=11, anchor="e").pack(side="left")
+                     fg=CLR["text_dim"], font=FONT_MICRO,
+                     width=9, anchor="e").pack(side="left")
             var = tk.StringVar(value=f"0.0{unit}")
             self._nav_vars[lbl] = var
             # Colored value
             tk.Label(r, textvariable=var, bg=CLR["panel"],
                      fg=CLR["accent2"], font=FONT_MONO,
-                     anchor="w", width=10).pack(side="left")
+                     anchor="w", width=8).pack(side="left")
 
         self._btn(stats, "↺ Reset All",
                   self._reset_navigation,
@@ -454,7 +466,7 @@ class EndoscopeApp:
 
     # ── Right sidebar ─────────────────────────────────────────────────
     def _build_right_sidebar(self, parent):
-        sb = tk.Frame(parent, bg=CLR["bg"], width=240)
+        sb = tk.Frame(parent, bg=CLR["bg"], width=150)
         sb.grid(row=0, column=2, sticky="ns", padx=(4, 6), pady=6)
         sb.grid_propagate(False)
 
@@ -830,8 +842,9 @@ class EndoscopeApp:
     def _on_filter_change(self, key, var):
         self.imaging.toggle_filter(key, var.get())
 
-    def _on_polyp_toggle(self):
-        self.imaging.show_polyp = self._polyp_var.get()
+    def _on_scenario_change(self):
+        self.imaging.scenario = self._scenario_var.get()
+        self._status(f"Scenario changed: {self._scenario_var.get().upper()}")
 
     def _on_close(self):
         self.stop()

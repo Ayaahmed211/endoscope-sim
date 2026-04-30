@@ -41,7 +41,7 @@ class ImagingSystem:
         self.apply_contrast     = False
         self.apply_edge_enhance = False
         self.flip_h             = False
-        self.show_polyp         = True
+        self.scenario = "polyp"         # none | polyp | tumor | ulcer | bleeding
 
         # Precompute reusable masks (expensive, done once)
         self._build_masks()
@@ -166,9 +166,15 @@ class ImagingSystem:
         # ── 5. Specular pool (reflection of LED on mucosa) ────────────
         frame = self._draw_specular(frame, t)
 
-        # ── 6. Polyp ──────────────────────────────────────────────────
-        if self.show_polyp:
+        # ── 6. Pathological Scenarios ──────────────────────────────────
+        if self.scenario == "polyp":
             frame = self._draw_polyp(frame, t)
+        elif self.scenario == "tumor":
+            frame = self._draw_tumor(frame, t)
+        elif self.scenario == "ulcer":
+            frame = self._draw_ulcer(frame, t)
+        elif self.scenario == "bleeding":
+            frame = self._draw_bleeding(frame, t)
 
         # ── 7. Breathing motion ───────────────────────────────────────
         dx = int(6 * math.sin(t * 0.65))
@@ -277,6 +283,85 @@ class ImagingSystem:
         cv2.fillPoly(overlay, [stalk_pts], (50, 35, 160))
 
         return cv2.addWeighted(frame, 0.55, overlay, 0.45, 0)
+
+    def _draw_tumor(self, frame: np.ndarray, t: float) -> np.ndarray:
+        """Simulate a larger, irregular, exophytic tumor mass."""
+        H, W = frame.shape[:2]
+        cx, cy = int(W * 0.55), int(H * 0.48)
+        
+        overlay = frame.copy()
+        
+        # Base irregular mass (multiple overlapping circles for 'bumpy' look)
+        for i in range(5):
+            angle = i * (360 / 5)
+            r = 15 + 5 * math.sin(t * 2 + i)
+            ox = int(cx + 25 * math.cos(math.radians(angle)))
+            oy = int(cy + 25 * math.sin(math.radians(angle)))
+            rx = int(35 + 10 * math.cos(t + i))
+            ry = int(30 + 8 * math.sin(t * 0.8 + i))
+            
+            # Shadow
+            cv2.ellipse(overlay, (ox+4, oy+5), (rx+4, ry+4), angle, 0, 360, (15, 10, 40), -1, cv2.LINE_AA)
+            # Tissue mass (darker, more necrotic look)
+            cv2.ellipse(overlay, (ox, oy), (rx, ry), angle, 0, 360, (60, 40, 160), -1, cv2.LINE_AA)
+            # Texture/Nodule
+            cv2.circle(overlay, (ox-5, oy-5), rx // 2, (80, 60, 180), -1, cv2.LINE_AA)
+
+        # Specular glints on the tumor surface
+        for _ in range(3):
+            sx = cx + int(30 * math.sin(t * 2.5 + _))
+            sy = cy + int(20 * math.cos(t * 2.1 + _))
+            cv2.circle(overlay, (sx, sy), 4, (220, 200, 255), -1, cv2.LINE_AA)
+
+        return cv2.addWeighted(frame, 0.4, overlay, 0.6, 0)
+
+    def _draw_ulcer(self, frame: np.ndarray, t: float) -> np.ndarray:
+        """Simulate an ulcerated lesion with fibrin center and inflamed rim."""
+        H, W = frame.shape[:2]
+        cx, cy = int(W * 0.45), int(H * 0.55)
+        rx, ry = 45, 30
+        
+        overlay = frame.copy()
+        
+        # Inflamed erythematous rim
+        cv2.ellipse(overlay, (cx, cy), (rx + 8, ry + 6), 15, 0, 360, (40, 30, 220), -1, cv2.LINE_AA)
+        
+        # Deeper red/purple base
+        cv2.ellipse(overlay, (cx, cy), (rx, ry), 15, 0, 360, (50, 40, 150), -1, cv2.LINE_AA)
+        
+        # White/Yellowish fibrin center (the 'crater')
+        pulse = 1.0 + 0.03 * math.sin(t * 3)
+        frx, fry = int(rx * 0.6 * pulse), int(ry * 0.6 * pulse)
+        cv2.ellipse(overlay, (cx, cy), (frx, fry), 15, 0, 360, (190, 210, 230), -1, cv2.LINE_AA)
+        
+        # Irregular fibrin texture
+        for i in range(4):
+            tx = cx + int(10 * math.sin(i + t))
+            ty = cy + int(8 * math.cos(i + t))
+            cv2.circle(overlay, (tx, ty), 6, (230, 240, 255), -1, cv2.LINE_AA)
+
+        return cv2.addWeighted(frame, 0.5, overlay, 0.5, 0)
+
+    def _draw_bleeding(self, frame: np.ndarray, t: float) -> np.ndarray:
+        """Simulate active luminal bleeding with blood streaks."""
+        H, W = frame.shape[:2]
+        overlay = frame.copy()
+        
+        # Blood pool at bottom
+        pool_y = int(H * 0.75 + 10 * math.sin(t * 1.2))
+        cv2.rectangle(overlay, (0, pool_y), (W, H), (20, 15, 180), -1)
+        
+        # Streaks of blood running down
+        for i in range(6):
+            sx = int(W * (0.2 + 0.12 * i))
+            sy_start = int(H * 0.3 + 20 * math.sin(t * 0.8 + i))
+            sy_end = pool_y
+            thickness = int(4 + 2 * math.sin(t + i))
+            cv2.line(overlay, (sx, sy_start), (sx, sy_end), (30, 20, 160), thickness, cv2.LINE_AA)
+            # Drip at the top of streak
+            cv2.circle(overlay, (sx, sy_start), thickness + 2, (35, 25, 190), -1, cv2.LINE_AA)
+
+        return cv2.addWeighted(frame, 0.6, overlay, 0.4, 0)
 
     # ──────────────────────────────────────────────────────────────────
     # Circular scope mask  (makes light vignette visible!)
